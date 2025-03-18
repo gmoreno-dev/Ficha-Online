@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Personagem - Correntes do Crepúsculo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Modal de Login / Nova Ficha -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <h2>Bem-vindo!</h2>
+      <button id="btn-login">Fazer Login</button>
+      <button id="btn-nova">Criar Nova Ficha</button>
+      <div id="login-form" style="display:none;">
+        <h3>Login</h3>
+        <input type="text" id="login-input" placeholder="Login">
+        <input type="password" id="senha-input" placeholder="Senha">
+        <button id="btn-realizar-login">Entrar</button>
+        <p id="login-error" style="color:red;"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo principal (Ficha) -->
+  <div class="container" id="ficha-container" style="display:none;">
+    <div class="header">
+      <h1>Correntes do Crepúsculo</h1>
+      <div class="subtitle">Um RPG top muito top mesmo</div>
+    </div>
+
+    <!-- Identidade -->
+    <div class="card" data-section="identidade">
+      <h2 class="card-header">Identidade</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" placeholder="Nome do personagem">
+        </div>
+        <div class="form-group">
+          <label for="destino">Pontos de Destino</label>
+          <input type="text" id="destino" placeholder="Pontos de Destino" value="3">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="aparencia">Imagem da Aparência</label>
+        <input type="file" id="aparencia" accept="image/*">
+        <div id="preview-container" style="margin-top: 10px;">
+          <img id="preview" src="" alt="Preview da imagem">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" placeholder="Descreva seu personagem..."></textarea>
+      </div>
+    </div>
+
+    <!-- Conceito -->
+    <div class="card" data-section="conceito">
+      <h2 class="card-header">Conceito</h2>
+      <div class="form-group">
+        <label for="conceito">Conceito</label>
+        <input type="text" id="conceito" placeholder="Ex: Guerreiro Marcado Pelas Sombras">
+      </div>
+      <p>O conceito é uma frase curta que resume claramente quem seu personagem é e o que ele faz...</p>
+      <p>Exemplos de Conceitos:</p>
+      <ul>
+        <li>Guerreiro Marcado Pelas Sombras</li>
+        <li>Sacerdotisa em Busca de Redenção</li>
+        <li>Ladrão Arrependido Buscando Redenção</li>
+        <li>Explorador de Ruínas Antigas</li>
+        <li>Alquimista Obcecado pelo Conhecimento Proibido</li>
+      </ul>
+    </div>
+
+    <!-- Dificuldades -->
+    <div class="card" data-section="dificuldades">
+      <h2 class="card-header">Dificuldades</h2>
+      <p>A Dificuldade destaca desafios constantes na vida do seu personagem...</p>
+      <ul>
+        <li><strong>Problemas pessoais:</strong> Ex.: "A Garrafa Sempre Me Chama".</li>
+        <li><strong>Relações complicadas:</strong> Ex.: "Caçado Pelo Culto de Merodath".</li>
+      </ul>
+      <div class="form-group">
+        <label for="dificuldade-pessoal">Problemas Pessoais</label>
+        <input type="text" id="dificuldade-pessoal" placeholder="Ex: A Garrafa Sempre Me Chama">
+      </div>
+      <div class="form-group">
+        <label for="dificuldade-relacional">Relações Complicadas</label>
+        <input type="text" id="dificuldade-relacional" placeholder="Ex: Caçado Pelo Culto de Merodath">
+      </div>
+    </div>
+
+    <!-- Aspectos -->
+    <div class="card" data-section="aspectos">
+      <h2 class="card-header">Aspectos</h2>
+      <div class="form-group">
+        <label>Aspecto Principal</label>
+        <input type="text" id="aspecto-principal" placeholder="O conceito central do seu personagem">
+      </div>
+      <div class="form-group">
+        <label>Dificuldade</label>
+        <input type="text" id="aspecto-dificuldade" placeholder="O problema principal do seu personagem">
+      </div>
+      <div class="aspectos-lista">
+        <div class="aspecto-item">
+          <input type="text" id="aspecto-adicional1" placeholder="Aspecto adicional">
+        </div>
+        <div class="aspecto-item">
+          <input type="text" id="aspecto-adicional2" placeholder="Aspecto adicional">
+        </div>
+        <div class="aspecto-item">
+          <input type="text" id="aspecto-adicional3" placeholder="Aspecto adicional">
+        </div>
+      </div>
+    </div>
+
+    <!-- Perícias -->
+    <div class="card" data-section="pericias">
+      <h2 class="card-header">Perícias</h2>
+      <div class="pericias-grid">
+        <!-- Excepcional -->
+        <div class="form-group">
+          <label>Excepcional (+5)</label>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-excepcional1" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-excepcional2" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-excepcional3" placeholder="Perícia"></div></div>
+        </div>
+        <!-- Ótimo -->
+        <div class="form-group">
+          <label>Ótimo (+4)</label>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-otimo1" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-otimo2" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-otimo3" placeholder="Perícia"></div></div>
+        </div>
+        <!-- Bom -->
+        <div class="form-group">
+          <label>Bom (+3)</label>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-bom1" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-bom2" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-bom3" placeholder="Perícia"></div></div>
+        </div>
+        <!-- Razoável -->
+        <div class="form-group">
+          <label>Razoável (+2)</label>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-razoavel1" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-razoavel2" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-razoavel3" placeholder="Perícia"></div></div>
+        </div>
+        <!-- Regular -->
+        <div class="form-group">
+          <label>Regular (+1)</label>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-regular1" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-regular2" placeholder="Perícia"></div></div>
+          <div class="pericia-item"><div class="pericia-nome"><input type="text" id="pericia-regular3" placeholder="Perícia"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sanidade -->
+    <div class="card" data-section="sanidade">
+      <h2 class="card-header">Sanidade</h2>
+      <div class="form-group">
+        <label for="sanidade">Nível de Sanidade: <span id="sanidade-valor">50%</span></label>
+        <input type="range" id="sanidade" min="0" max="100" value="50">
+      </div>
+    </div>
+
+    <!-- Consequências -->
+    <div class="card" data-section="consequencias">
+      <h2 class="card-header">Consequências</h2>
+      <div class="consequencia">
+        <div class="consequencia-valor">2</div>
+        <div class="consequencia-tipo">Leve</div>
+        <input type="text" id="consequencia-leve" class="consequencia-desc" placeholder="Descrição da consequência leve">
+      </div>
+      <div class="consequencia">
+        <div class="consequencia-valor">4</div>
+        <div class="consequencia-tipo">Moderada</div>
+        <input type="text" id="consequencia-moderada" class="consequencia-desc" placeholder="Descrição da consequência moderada">
+      </div>
+      <div class="consequencia">
+        <div class="consequencia-valor">6</div>
+        <div class="consequencia-tipo">Grave</div>
+        <input type="text" id="consequencia-grave" class="consequencia-desc" placeholder="Descrição da consequência grave">
+      </div>
+    </div>
+
+    <!-- História do Personagem -->
+    <div class="card" data-section="historia">
+      <h2 class="card-header">História do Personagem</h2>
+      <div class="form-group">
+         <textarea id="historia" placeholder="Conte a história do seu personagem..."></textarea>
+      </div>
+    </div>
+
+    <!-- Equipamentos -->
+    <div class="card" data-section="equipamentos">
+      <h2 class="card-header">Equipamentos</h2>
+      <div class="form-group">
+         <textarea id="equipamentos" placeholder="Liste os equipamentos do seu personagem..."></textarea>
+      </div>
+    </div>
+
+    <!-- Contratos -->
+    <div class="card" data-section="contratos">
+      <h2 class="card-header">Contratos</h2>
+      <div class="form-group">
+         <label for="contratos-entidades">Entidades</label>
+         <textarea id="contratos-entidades" placeholder="Anote as entidades com as quais o personagem tem contratos"></textarea>
+      </div>
+      <div class="form-group">
+         <label for="contratos-poderes">Poderes do Contrato</label>
+         <textarea id="contratos-poderes" placeholder="Anote os poderes concedidos pelos contratos"></textarea>
+      </div>
+    </div>
+
+    <!-- Habilidade Especial -->
+    <div class="card" data-section="habilidade">
+      <h2 class="card-header">Habilidade Especial</h2>
+      <p>Selecione uma habilidade especial (apenas uma):</p>
+      <div class="habilidade-opcao">
+        <input type="radio" name="habilidade" id="intuitao-profana" value="Intuição Profana">
+        <label for="intuitao-profana">
+          <strong>Intuição Profana</strong>
+          <p>Você pode analisar rapidamente um oponente, percebendo suas fraquezas e forças...</p>
+          <p><em>Preço: Perda temporária de sanidade devido à tensão mental e ao estresse da análise sobrenatural.</em></p>
+        </label>
+      </div>
+      <div class="habilidade-opcao">
+        <input type="radio" name="habilidade" id="presenca-silenciosa" value="Presença Silenciosa">
+        <label for="presenca-silenciosa">
+          <strong>Presença Silenciosa</strong>
+          <p>Você pode ocultar completamente sua presença e evitar produzir qualquer som...</p>
+          <p><em>Preço: Após usar, você fica temporariamente exausto fisicamente...</em></p>
+        </label>
+      </div>
+      <div class="habilidade-opcao">
+        <input type="radio" name="habilidade" id="sentidos-apurados" value="Sentidos Apurados">
+        <label for="sentidos-apurados">
+          <strong>Sentidos Apurados</strong>
+          <p>Você pode ampliar drasticamente sua percepção, identificando perigos ocultos...</p>
+          <p><em>Preço: Após usar, você sofre uma sensibilidade extrema temporária...</em></p>
+        </label>
+      </div>
+      <div class="habilidade-opcao">
+        <input type="radio" name="habilidade" id="aura-influencia" value="Aura de Influência">
+        <label for="aura-influencia">
+          <strong>Aura de Influência</strong>
+          <p>Você consegue influenciar sutilmente as emoções e decisões das pessoas próximas...</p>
+          <p><em>Preço: Cada uso causa um desgaste emocional intenso...</em></p>
+        </label>
+      </div>
+      <div class="habilidade-opcao">
+        <input type="radio" name="habilidade" id="toque-corrupcao" value="Toque da Corrupção">
+        <label for="toque-corrupcao">
+          <strong>Toque da Corrupção</strong>
+          <p>Você pode drenar temporariamente energia vital ou sanidade de um oponente através do toque...</p>
+          <p><em>Preço: A cada utilização, você perde uma pequena porção da própria sanidade...</em></p>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-section">
+      <button id="btn-salvar" class="btn">Salvar Ficha</button>
+      <button id="btn-reset" class="btn">Resetar Ficha</button>
+    </div>
+    
+    <div class="footer">
+      <p>© 2025 Correntes do Crepúsculo - Todos os direitos reservados.</p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
