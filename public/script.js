@@ -1,6 +1,6 @@
 // script.js
 
-// Função para enviar arquivo e obter URL
+// Função para enviar o arquivo de imagem e obter o URL via Cloudinary
 document
   .getElementById("aparencia")
   .addEventListener("change", function (event) {
@@ -8,7 +8,6 @@ document
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-
       fetch("/upload-image", {
         method: "POST",
         body: formData,
@@ -19,7 +18,7 @@ document
             const preview = document.getElementById("preview");
             preview.src = data.url;
             preview.style.display = "block";
-            // Armazena o URL num campo oculto para enviar na ficha
+            // Cria ou atualiza um campo oculto para armazenar o URL da imagem
             let hiddenInput = document.getElementById("aparencia-url");
             if (!hiddenInput) {
               hiddenInput = document.createElement("input");
@@ -89,7 +88,7 @@ btnRealizarLogin.addEventListener("click", () => {
     });
 });
 
-// Função para preencher a ficha com os dados retornados do login
+// Função para preencher a ficha com os dados do login
 function preencherFicha(data) {
   document.getElementById("nome").value = data.nome || "";
   document.getElementById("destino").value = data.pontos_destino || "";
@@ -182,7 +181,7 @@ function preencherFicha(data) {
   document.getElementById("ficha-container").dataset.fichaId = data.id;
 }
 
-// Função para coletar os dados da ficha (incluindo URL da imagem)
+// Função para coletar os dados da ficha (incluindo o URL da imagem)
 function coletarDadosFicha() {
   return {
     id: document.getElementById("ficha-container").dataset.fichaId,
@@ -262,7 +261,7 @@ function coletarDadosFicha() {
     )
       ? document.querySelector('input[name="habilidade"]:checked').value
       : "",
-    // Inclui o URL da imagem, se já estiver setado
+    // Inclui o URL da imagem, se existir
     aparencia: document.getElementById("aparencia-url")
       ? document.getElementById("aparencia-url").value
       : "",

@@ -4,20 +4,27 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const path = require("path");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
 app.use(bodyParser.json());
-// Servir arquivos estáticos (incluindo imagens uploadadas)
+// Serve arquivos estáticos (incluindo imagens uploadadas via Cloudinary se necessário)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Configuração do multer para salvar arquivos na pasta public/uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "public", "uploads"));
-  },
-  filename: (req, file, cb) => {
-    // Gera um nome único com data e nome original
-    cb(null, Date.now() + "-" + file.originalname);
+// Configuração do Cloudinary com as credenciais fornecidas
+cloudinary.config({
+  cloud_name: "dgkej27v2",
+  api_key: "866676113431494",
+  api_secret: "1KwlNUWbEbGEiHhBwf5mq78JTIQ",
+});
+
+// Configuração do armazenamento com Cloudinary para o multer
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "fichas", // Pasta onde as imagens serão armazenadas no Cloudinary
+    allowed_formats: ["jpg", "png", "jpeg", "gif"],
   },
 });
 const upload = multer({ storage });
@@ -39,14 +46,13 @@ db.connect((err) => {
   console.log("Conectado ao banco de dados MySQL.");
 });
 
-// Endpoint para upload da imagem
+// Endpoint para upload da imagem usando Cloudinary
 app.post("/upload-image", upload.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Nenhum arquivo enviado." });
   }
-  // Como a pasta "public" é servida estaticamente, o URL pode ser:
-  const fileUrl = `/uploads/${req.file.filename}`;
-  return res.json({ url: fileUrl });
+  // O multer com Cloudinary armazena a imagem e define req.file.path como o URL público
+  return res.json({ url: req.file.path });
 });
 
 // Endpoint para login
@@ -71,7 +77,7 @@ app.post("/login", (req, res) => {
 // Endpoint para salvar (inserir ou atualizar) a ficha
 app.post("/save", (req, res) => {
   const ficha = req.body;
-
+  // Se existe um campo "id", atualizar; caso contrário, inserir nova ficha
   if (ficha.id) {
     const sql = "UPDATE fichas SET ? WHERE id = ?";
     db.query(sql, [ficha, ficha.id], (err, result) => {
@@ -82,6 +88,7 @@ app.post("/save", (req, res) => {
       return res.json({ message: "Ficha atualizada com sucesso." });
     });
   } else {
+    // Gera login (primeiro nome do personagem) e senha aleatória de 4 dígitos
     const nome = ficha.nome || "";
     const firstName = nome.split(" ")[0] || "usuario";
     const randomPass = Math.floor(1000 + Math.random() * 9000).toString();
