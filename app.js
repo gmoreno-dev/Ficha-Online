@@ -3,10 +3,24 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const path = require("path");
+const multer = require("multer");
 
 const app = express();
 app.use(bodyParser.json());
+// Servir arquivos estáticos (incluindo imagens uploadadas)
 app.use(express.static(path.join(__dirname, "public")));
+
+// Configuração do multer para salvar arquivos na pasta public/uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "public", "uploads"));
+  },
+  filename: (req, file, cb) => {
+    // Gera um nome único com data e nome original
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 // Configuração da conexão com o MySQL
 const db = mysql.createConnection({
@@ -23,6 +37,16 @@ db.connect((err) => {
     return;
   }
   console.log("Conectado ao banco de dados MySQL.");
+});
+
+// Endpoint para upload da imagem
+app.post("/upload-image", upload.single("file"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "Nenhum arquivo enviado." });
+  }
+  // Como a pasta "public" é servida estaticamente, o URL pode ser:
+  const fileUrl = `/uploads/${req.file.filename}`;
+  return res.json({ url: fileUrl });
 });
 
 // Endpoint para login
@@ -48,7 +72,6 @@ app.post("/login", (req, res) => {
 app.post("/save", (req, res) => {
   const ficha = req.body;
 
-  // Se existe um campo "id", então atualizar; caso contrário, inserir nova ficha.
   if (ficha.id) {
     const sql = "UPDATE fichas SET ? WHERE id = ?";
     db.query(sql, [ficha, ficha.id], (err, result) => {
@@ -59,13 +82,11 @@ app.post("/save", (req, res) => {
       return res.json({ message: "Ficha atualizada com sucesso." });
     });
   } else {
-    // Para nova ficha, gerar login (primeiro nome do personagem) e senha aleatória de 4 dígitos.
     const nome = ficha.nome || "";
     const firstName = nome.split(" ")[0] || "usuario";
     const randomPass = Math.floor(1000 + Math.random() * 9000).toString();
     ficha.login = firstName;
     ficha.senha = randomPass;
-    // Garantir que não há id na inserção
     delete ficha.id;
     const sql = "INSERT INTO fichas SET ?";
     db.query(sql, ficha, (err, result) => {
@@ -73,7 +94,6 @@ app.post("/save", (req, res) => {
         console.error(err);
         return res.status(500).json({ error: "Erro ao criar ficha." });
       }
-      // Retorna o login e a senha para que o usuário possa anotar
       return res.json({
         message: "Ficha criada com sucesso.",
         login: ficha.login,

@@ -1,18 +1,40 @@
 // script.js
 
-// Função para exibir a prévia da imagem
+// Função para enviar arquivo e obter URL
 document
   .getElementById("aparencia")
   .addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const preview = document.getElementById("preview");
-        preview.src = e.target.result;
-        preview.style.display = "block";
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      fetch("/upload-image", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.url) {
+            const preview = document.getElementById("preview");
+            preview.src = data.url;
+            preview.style.display = "block";
+            // Armazena o URL num campo oculto para enviar na ficha
+            let hiddenInput = document.getElementById("aparencia-url");
+            if (!hiddenInput) {
+              hiddenInput = document.createElement("input");
+              hiddenInput.type = "hidden";
+              hiddenInput.id = "aparencia-url";
+              document
+                .getElementById("ficha-container")
+                .appendChild(hiddenInput);
+            }
+            hiddenInput.value = data.url;
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
   });
 
@@ -34,7 +56,6 @@ btnLogin.addEventListener("click", () => {
 });
 
 btnNova.addEventListener("click", () => {
-  // Esconde o modal e mostra a ficha para criação de nova ficha
   loginModal.style.display = "none";
   document.getElementById("ficha-container").style.display = "block";
 });
@@ -57,7 +78,6 @@ btnRealizarLogin.addEventListener("click", () => {
       if (data.error) {
         loginError.textContent = data.error;
       } else {
-        // Preenche os campos com os dados da ficha para edição
         preencherFicha(data);
         loginModal.style.display = "none";
         document.getElementById("ficha-container").style.display = "block";
@@ -137,7 +157,6 @@ function preencherFicha(data) {
   document.getElementById("contratos-poderes").value =
     data.contratos_poderes || "";
 
-  // Seleciona a habilidade especial, se houver
   if (data.habilidade_especial) {
     const radio = document.querySelector(
       `input[name="habilidade"][value="${data.habilidade_especial}"]`
@@ -145,14 +164,28 @@ function preencherFicha(data) {
     if (radio) radio.checked = true;
   }
 
-  // Guarde o id da ficha em um campo oculto (ou variável global) para usar na atualização
+  // Se a ficha já tiver imagem, mostra a prévia e atualiza o campo oculto
+  if (data.aparencia) {
+    const preview = document.getElementById("preview");
+    preview.src = data.aparencia;
+    preview.style.display = "block";
+    let hiddenInput = document.getElementById("aparencia-url");
+    if (!hiddenInput) {
+      hiddenInput = document.createElement("input");
+      hiddenInput.type = "hidden";
+      hiddenInput.id = "aparencia-url";
+      document.getElementById("ficha-container").appendChild(hiddenInput);
+    }
+    hiddenInput.value = data.aparencia;
+  }
+
   document.getElementById("ficha-container").dataset.fichaId = data.id;
 }
 
-// Função para coletar os dados da ficha
+// Função para coletar os dados da ficha (incluindo URL da imagem)
 function coletarDadosFicha() {
   return {
-    id: document.getElementById("ficha-container").dataset.fichaId, // Pode ser undefined se nova
+    id: document.getElementById("ficha-container").dataset.fichaId,
     nome: document.getElementById("nome").value.trim(),
     pontos_destino:
       parseInt(document.getElementById("destino").value.trim()) || 0,
@@ -229,6 +262,10 @@ function coletarDadosFicha() {
     )
       ? document.querySelector('input[name="habilidade"]:checked').value
       : "",
+    // Inclui o URL da imagem, se já estiver setado
+    aparencia: document.getElementById("aparencia-url")
+      ? document.getElementById("aparencia-url").value
+      : "",
   };
 }
 
@@ -257,7 +294,6 @@ btnSalvar.addEventListener("click", () => {
             : "")
       );
       btnSalvar.textContent = "Salvar Ficha";
-      // Reativa o botão após 15 segundos
       setTimeout(() => {
         salvarBloqueado = false;
         btnSalvar.disabled = false;
